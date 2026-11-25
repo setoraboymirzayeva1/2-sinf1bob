@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informatika 2-sinf – Qiziqarli test</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Comic Sans MS","Trebuchet MS",Arial,sans-serif;background:linear-gradient(135deg,#a1c4fd,#c2e9fb 50%,#fbc2eb);min-height:100vh;padding:16px;color:#333}
+  .wrap{max-width:640px;margin:0 auto}
+  h1{text-align:center;font-size:28px;margin:8px 0;color:#5b2a86;text-shadow:2px 2px #fff}
+  .sub{text-align:center;margin-bottom:14px;font-size:17px}
+  .card{background:#fff;border-radius:24px;padding:20px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+  .variants{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .vbtn{border:none;border-radius:20px;padding:18px 22px;font-size:20px;font-family:inherit;color:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.2);transition:transform .1s}
+  .vbtn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+  .v1{background:#ff7675}.v2{background:#0984e3}.v3{background:#00b894}
+  .bar{height:14px;background:#eee;border-radius:10px;overflow:hidden;margin-bottom:12px}
+  .bar div{height:100%;width:0;background:linear-gradient(90deg,#fdcb6e,#e17055);transition:width .4s}
+  .qnum{font-size:15px;color:#888;margin-bottom:6px}
+  .q{font-size:22px;font-weight:bold;margin-bottom:16px;line-height:1.3}
+  .emoji{font-size:54px;text-align:center;margin-bottom:6px}
+  .opt{display:block;width:100%;text-align:left;margin:10px 0;padding:14px 16px;font-size:19px;font-family:inherit;border:3px solid #dfe6e9;background:#f8f9fa;border-radius:16px;cursor:pointer;transition:all .15s}
+  .opt:hover:not(:disabled){border-color:#a29bfe;background:#f1efff;transform:scale(1.02)}
+  .opt.right{background:#d4f8e0;border-color:#00b894}
+  .opt.wrong{background:#ffe0e0;border-color:#d63031;animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fb{min-height:30px;font-size:18px;margin:8px 0;font-weight:bold}
+  .next{display:none;margin:6px auto 0;border:none;background:#6c5ce7;color:#fff;font-size:20px;font-family:inherit;padding:12px 28px;border-radius:18px;cursor:pointer;box-shadow:0 4px 0 #4834d4}
+  .result{text-align:center}
+  .result .big{font-size:80px}
+  .stars{font-size:38px;margin:6px 0}
+  .again{margin:6px;border:none;background:#fd79a8;color:#fff;font-size:19px;font-family:inherit;padding:12px 22px;border-radius:18px;cursor:pointer;box-shadow:0 4px 0 #e84393}
+  .hidden{display:none}
+  .conf{position:fixed;top:-20px;font-size:26px;animation:fall 3s linear forwards;pointer-events:none}
+  @keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💻 Informatika sarguzashti 🚀</h1>
+  <div class="sub">2-sinf • 1-bob: Kompyuter bilan tanishamiz</div>
+
+  <div id="menu" class="card">
+    <div class="emoji">🤖</div>
+    <p style="text-align:center;font-size:19px">Salom, kichkina dasturchi! Variantni tanla va boshlaymiz!</p>
+    <div class="variants">
+      <button class="vbtn v1" onclick="start(0)">⭐ 1-variant</button>
+      <button class="vbtn v2" onclick="start(1)">🌈 2-variant</button>
+      <button class="vbtn v3" onclick="start(2)">🚀 3-variant</button>
+    </div>
+  </div>
+
+  <div id="quiz" class="card hidden">
+    <div class="bar"><div id="prog"></div></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="emoji" id="emoji"></div>
+    <div class="q" id="qtext"></div>
+    <div id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <button class="next" id="next" onclick="nextQ()">Keyingisi ➡️</button>
+  </div>
+
+  <div id="result" class="card result hidden">
+    <div class="big" id="rEmoji"></div>
+    <h2 id="rTitle"></h2>
+    <div class="stars" id="rStars"></div>
+    <p id="rText" style="font-size:19px"></p>
+    <button class="again" onclick="start(cur)">🔄 Qayta urinish</button>
+    <button class="again" style="background:#0984e3;box-shadow:0 4px 0 #0652a8" onclick="home()">🏠 Boshqa variant</button>
+  </div>
+</div>
+
+<script>
+// Har bir savol: [emoji, savol, [javoblar], to'g'ri javob indeksi, izoh]
+const DATA = [
+ // ---------- 1-VARIANT ----------
+ [
+  ["🖥️","Kompyuterning «ko'zi» — rasm va yozuvlarni ko'rsatadigan qism qaysi?",["Monitor","Sichqoncha","Klaviatura"],0,"Monitor ekranda tasvirlarni ko'rsatadi."],
+  ["⌨️","Matn yozish uchun qaysi qurilmadan foydalanamiz?",["Kolonka","Klaviatura","Monitor"],1,"Klaviatura harf va raqamlarni kiritish uchun kerak."],
+  ["🖱️","Ekrandagi strelkani (kursorni) yurgizadigan qurilma qaysi?",["Printer","Mikrofon","Sichqoncha"],2,"Sichqoncha kursorni boshqaradi."],
+  ["🧠","Kompyuterning «miyasi» joylashgan qism qaysi?",["Tizim bloki","Quloqchin","Kolonka"],0,"Tizim blokida protsessor — kompyuterning miyasi bor."],
+  ["👀","Kompyuterda ishlaganda ekrandan qanday masofada o'tirish kerak?",["Ekranga tegib","Bir qo'l uzunligicha","Juda yaqin burnimizni tekkizib"],1,"Ko'zimizni asrash uchun ekrandan uzoqroq o'tiramiz."]
+ ],
+ // ---------- 2-VARIANT ----------
+ [
+  ["🤔","Qaysi biri kompyuterning qismi EMAS?",["Monitor","Choynak","Klaviatura"],1,"Choynak oshxona buyumi, kompyuter qismi emas."],
+  ["🔊","Kompyuterdan tovushni eshitish uchun nima kerak?",["Kolonka yoki quloqchin","Sichqoncha","Printer"],0,"Kolonka va quloqchin tovushni chiqaradi."],
+  ["🍕","Kompyuter yonida ovqatlanish yoki suv ichish mumkinmi?",["Ha, doim mumkin","Yo'q, kompyuter buzilishi mumkin","Faqat sharbat mumkin"],1,"Ovqat va suyuqlik kompyuterga zarar yetkazadi."],
+  ["🖱️","Sichqonchada nechta asosiy tugma bor?",["1 ta","2 ta (chap va o'ng)","10 ta"],1,"Asosiy tugmalar: chap va o'ng."],
+  ["📚","Axborot nima?",["Faqat o'yinchoq","Faqat kompyuter","Atrofimizdagi olam haqidagi ma'lumotlar"],2,"Axborot — bu bizga yangi narsani bildiradigan ma'lumot."]
+ ],
+ // ---------- 3-VARIANT ----------
+ [
+  ["🖨️","Rasm yoki matnni qog'ozga chiqarib beradigan qurilma qaysi?",["Printer","Monitor","Klaviatura"],0,"Printer ma'lumotni qog'ozga chop etadi."],
+  ["🙌","Kompyuterga yaqinlashishdan oldin qo'llarimiz qanday bo'lishi kerak?",["Nam va iflos","Toza va quruq","Yopishqoq"],1,"Toza va quruq qo'l bilan ishlaymiz."],
+  ["⏰","Kompyuterda uzoq ishlaganda nima qilish kerak?",["Dam olib, ko'zga mashq qilish","Tunda ham ishlash","Ko'zni yumib ishlash"],0,"Har 15–20 daqiqada dam olamiz."],
+  ["👂","Eshitib olingan axborotni qaysi a'zo bilan qabul qilamiz?",["Burun","Ko'z","Quloq"],2,"Tovushni quloq bilan eshitamiz."],
+  ["🤝","Kompyuter bizga nima bo'lib xizmat qiladi?",["Inson uchun yordamchi","Inson o'rniga o'ynaydigan o'yinchoq","Faqat televizor"],0,"Kompyuter — axborot bilan ishlashda inson yordamchisi."]
+ ]
+];
+const PRAISE=["Barakalla! 🎉","Ofarin! 🌟","Juda yaxshi! 👏","Zo'r! 🚀","Ajoyib! 🏆"];
+let cur=0,idx=0,score=0,locked=false;
+const $=id=>document.getElementById(id);
+
+function start(v){cur=v;idx=0;score=0;
+  $("menu").classList.add("hidden");$("result").classList.add("hidden");$("quiz").classList.remove("hidden");show();}
+function home(){$("result").classList.add("hidden");$("quiz").classList.add("hidden");$("menu").classList.remove("hidden");}
+function show(){
+  locked=false;const q=DATA[cur][idx];
+  $("qnum").textContent=`${cur+1}-variant • ${idx+1}/5-savol`;
+  $("prog").style.width=(idx/5*100)+"%";
+  $("emoji").textContent=q[0];$("qtext").textContent=q[1];
+  $("fb").textContent="";$("next").style.display="none";
+  $("opts").innerHTML="";
+  q[2].forEach((t,i)=>{const b=document.createElement("button");b.className="opt";
+    b.textContent=["🅰️ ","🅱️ ","🅲 "][i]+t;b.onclick=()=>pick(i,b);$("opts").appendChild(b);});
+}
+function pick(i,btn){
+  if(locked)return;locked=true;const q=DATA[cur][idx];
+  const all=document.querySelectorAll(".opt");all.forEach(b=>b.disabled=true);
+  if(i===q[3]){score++;btn.classList.add("right");
+    $("fb").style.color="#00b894";$("fb").textContent=PRAISE[Math.floor(Math.random()*PRAISE.length)];}
+  else{btn.classList.add("wrong");all[q[3]].classList.add("right");
+    $("fb").style.color="#d63031";$("fb").textContent="Hechqisi yo'q! 💡 "+q[4];}
+  $("next").style.display="block";
+  $("next").textContent=idx===4?"Natijani ko'rish 🏁":"Keyingisi ➡️";
+}
+function nextQ(){idx++;if(idx>=5)finish();else show();}
+function finish(){
+  $("quiz").classList.add("hidden");$("result").classList.remove("hidden");
+  const em=["😢","🙂","😊","😃","🤩","🏆"][score];
+  const msg=[
+   "Xafa bo'lma! Darslikni qayta o'qib, yana urinib ko'ramiz.",
+   "Yomon emas! Yana mashq qilsang, yaxshi bo'ladi.",
+   "Yaxshi boshlanish! Yana bir marta urinib ko'r.",
+   "Juda yaxshi natija! Sal-pal qoldi!",
+   "Deyarli mukammal! Sen zo'rsan!",
+   "Ajoyib! Sen haqiqiy kompyuter ustasisan! 🥇"][score];
+  $("rEmoji").textContent=em;
+  $("rTitle").textContent=`Natija: ${score} / 5`;
+  $("rStars").textContent="⭐".repeat(score)+"☆".repeat(5-score);
+  $("rText").textContent=msg;
+  if(score>=4)confetti();
+}
+function confetti(){
+  const e=["🎉","🎊","⭐","🌈","💖","🎈"];
+  for(let i=0;i<40;i++){const s=document.createElement("div");s.className="conf";
+    s.textContent=e[i%e.length];s.style.left=Math.random()*100+"vw";
+    s.style.animationDelay=Math.random()*1.5+"s";document.body.appendChild(s);
+    setTimeout(()=>s.remove(),5000);}
+}
+</script>
+</body>
+</html>
